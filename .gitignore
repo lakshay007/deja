@@ -1,0 +1,10 @@
+# The archive: private browsing history, covers and logs. Never commit.
+data/
+
+# Kept on this machine only
+PLAN.md
+CLAUDE.md
+tests/
+
+__pycache__/
+.DS_Store

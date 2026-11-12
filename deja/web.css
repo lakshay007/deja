@@ -1,0 +1,291 @@
+/* deja: a shelf of what I am reading.
+   Indigo ink on cool paper. The one loud thing is the red bookmark on each
+   cover, which carries the chapter I stopped at. Fonts are ones macOS ships,
+   because the page loads nothing from the network. */
+
+:root {
+  color-scheme: light dark;
+  --paper: #eceef3;
+  --ink: #1b2140;
+  --soft: #586085;
+  --rule: #c7ccdc;
+  --ribbon: #d3243b;
+  --on-ribbon: #ffffff;
+  --block: #1b2140;      /* a cover with no art */
+  --on-block: #eceef3;
+  --contact: rgba(27, 33, 64, 0.34);
+  --text: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --display: "Avenir Next Condensed", "DIN Condensed", "Arial Narrow", sans-serif;
+  --gutter: max(20px, calc((100vw - 1160px) / 2));
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14183a;
+    --ink: #e9ebf7;
+    --soft: #9fa6cf;
+    --rule: #333a6c;
+    --ribbon: #e3334b;
+    --block: #272d63;
+    --on-block: #e9ebf7;
+    --contact: rgba(0, 0, 0, 0.6);
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.5 var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ul, ol { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* Header */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 14px var(--gutter);
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+.brand {
+  font: 800 34px/1 var(--display);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+.search { display: flex; flex: 1; align-items: center; min-width: 0; }
+.search input {
+  flex: 1;
+  min-width: 0;
+  max-width: 540px;
+  height: 42px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+.search input::placeholder { color: var(--soft); opacity: 1; }
+.search input:focus-visible { outline-offset: 1px; }
+.search button {
+  height: 42px;
+  margin-left: -1.5px;  /* share the field's edge: one control, not two */
+  padding: 0 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 15px/1 var(--text);
+  cursor: pointer;
+}
+.search button:hover { background: var(--ink); color: var(--paper); }
+.button {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 600 15px/1 var(--text);
+  text-decoration: none;
+}
+.clear { margin-left: 14px; color: var(--soft); font-size: 14px; }
+
+main, footer { padding: 0 var(--gutter); }
+
+/* Covers and their bookmarks */
+.cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 2 / 3;
+  border-radius: 3px;
+  background: var(--block);
+  box-shadow: 0 1px 1px var(--contact), 0 16px 22px -16px var(--contact);
+  text-decoration: none;
+}
+.cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+.plain {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px 12px;
+  overflow: hidden;
+  border-radius: inherit;
+  /* screentone, fading out behind the name */
+  background:
+    linear-gradient(to top, var(--block) 26%, transparent 80%),
+    radial-gradient(circle, rgba(236, 238, 243, 0.2) 1.3px, transparent 1.7px) 0 0 / 7px 7px,
+    var(--block);
+  color: var(--on-block);
+  font: 800 22px/1.04 var(--display);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.mark {
+  position: absolute;
+  top: -5px;
+  right: 12px;
+  min-width: 36px;
+  padding: 9px 5px 16px;
+  background: var(--ribbon);
+  color: var(--on-ribbon);
+  font: 800 21px/1 var(--display);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 8px), 0 100%);
+  transform-origin: top;
+  animation: place 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  transition: padding-bottom 0.12s ease-out;
+}
+.cover:hover .mark, .cover:focus-visible .mark { padding-bottom: 23px; }
+@keyframes place { from { transform: scaleY(0); } }
+
+.cover progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 5px;
+  border: 0;
+  border-radius: 0 0 3px 3px;
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(12, 14, 34, 0.6);
+}
+.cover progress::-webkit-progress-bar { background: rgba(12, 14, 34, 0.6); }
+.cover progress::-webkit-progress-value { background: var(--ribbon); }
+.cover progress::-moz-progress-bar { background: var(--ribbon); }
+
+/* The series read most recently */
+.latest {
+  display: grid;
+  grid-template-columns: minmax(170px, 250px) minmax(0, 1fr);
+  gap: 44px;
+  align-items: end;
+  padding: 44px 0 48px;
+  border-bottom: 1px solid var(--rule);
+}
+.latest .mark {
+  top: -7px;
+  right: 20px;
+  min-width: 56px;
+  padding: 14px 8px 24px;
+  font-size: 36px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 12px), 0 100%);
+}
+.latest .cover:hover .mark, .latest .cover:focus-visible .mark { padding-bottom: 32px; }
+.latest .cover progress { height: 7px; }
+.about { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.about h1 {
+  margin-bottom: 6px;
+  font: 800 clamp(36px, 5.4vw, 64px)/0.98 var(--display);
+  text-wrap: balance;
+}
+.about .when { font-weight: 500; }
+.about .standing, .about .aliases { color: var(--soft); font-size: 15px; }
+.about .synopsis {
+  max-width: 64ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+.about .button { height: 48px; margin-top: 14px; padding: 0 24px; font-size: 16px; }
+
+/* Section headings */
+.heading { display: flex; align-items: baseline; gap: 14px; margin: 40px 0 24px; }
+.heading h1, .heading h2 { font: 800 28px/1 var(--display); }
+.heading p { color: var(--soft); font-size: 14px; }
+
+/* The shelf */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 38px 26px;
+}
+.book h3 {
+  margin-top: 14px;
+  font: 600 15px/1.25 var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.book .when, .book .count { margin-top: 2px; color: var(--soft); font-size: 13px; }
+.book .count { font-variant-numeric: tabular-nums; }
+.book details { margin-top: 6px; font-size: 13px; }
+.book summary { width: fit-content; color: var(--soft); cursor: pointer; }
+.book details p { margin-top: 6px; white-space: pre-line; }
+.book details p:first-of-type { color: var(--soft); }
+
+/* Bookmarks go in one after another, once, when the page opens */
+.grid li:nth-child(1) .mark { animation-delay: 0.08s; }
+.grid li:nth-child(2) .mark { animation-delay: 0.12s; }
+.grid li:nth-child(3) .mark { animation-delay: 0.16s; }
+.grid li:nth-child(4) .mark { animation-delay: 0.2s; }
+.grid li:nth-child(5) .mark { animation-delay: 0.24s; }
+.grid li:nth-child(6) .mark { animation-delay: 0.28s; }
+.grid li:nth-child(7) .mark { animation-delay: 0.32s; }
+.grid li:nth-child(8) .mark { animation-delay: 0.36s; }
+.grid li:nth-child(n + 9) .mark { animation-delay: 0.4s; }
+
+/* Lists of pages */
+.pages { border-top: 1px solid var(--rule); }
+.pages li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 24px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.pages a { font-weight: 500; overflow-wrap: anywhere; text-decoration: none; }
+.pages a:hover { text-decoration: underline; }
+.pages .host, .pages .date, .pages .visits { color: var(--soft); font-size: 13px; }
+.pages .host { grid-column: 1; overflow-wrap: anywhere; }
+.pages .date, .pages .visits { grid-column: 2; text-align: right; font-variant-numeric: tabular-nums; }
+.pages .date { grid-row: 1; align-self: center; }
+.pages .visits { grid-row: 2; }
+
+.empty { padding: 72px 0 40px; }
+.empty h1 { font: 800 40px/1 var(--display); margin-bottom: 12px; }
+.empty p { max-width: 52ch; color: var(--soft); }
+code {
+  padding: 1px 6px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font: 14px ui-monospace, Menlo, monospace;
+  color: var(--ink);
+}
+
+footer { margin: 56px 0 32px; color: var(--soft); font-size: 13px; }
+
+@media (max-width: 620px) {
+  .top { gap: 14px; }
+  .brand { font-size: 28px; }
+  .search button { display: none; }
+  .latest { grid-template-columns: 1fr; gap: 24px; padding: 28px 0 32px; }
+  .latest .cover { width: min(200px, 56vw); }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 30px 16px; }
+  .pages li { grid-template-columns: minmax(0, 1fr); }
+  .pages .date, .pages .visits { grid-column: 1; grid-row: auto; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mark { animation: none; transition: none; }
+}
